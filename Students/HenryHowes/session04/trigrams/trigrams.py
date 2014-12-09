@@ -3,22 +3,30 @@
 import io
 import random
 
-sherlock_file = io.open('sherlock_small.txt')
+
+sherlock_file = io.open('sherlock.txt')
 sherlock_text = sherlock_file.read()
 sherlock_text = sherlock_text.replace('\n', " ").split(" ")
 
 
 sherlock_trigrams = {}
 for i, word in enumerate(sherlock_text):
-    if i <= (len(sherlock_text)-3):
-        sherlock_trigrams[word, sherlock_text[i+1]] = sherlock_text[i+2]
+    if i < (len(sherlock_text)-2):
+        first_two = (word, sherlock_text[i+1])
+        if first_two not in sherlock_trigrams:
+            sherlock_trigrams[first_two] = []
+        sherlock_trigrams[first_two].append(sherlock_text[i+2])
 
-sherlock_output = open ("sherlock_output.txt", "w")
-for number in range(50):
-    random_key = random.choice(sherlock_trigrams.keys())
-    print random_key
-    random_trigram = "{a} {b} {c} ".format(a = random_key[0], b = random_key[1], c = sherlock_trigrams[random_key])
-    sherlock_output.write(random_trigram)
+sherlock_output = open("sherlock_output.txt", "w")
+
+key = random.choice(sherlock_trigrams.keys())
+sherlock_output.write("{a} {b}".format(a=key[0], b=key[1]))
+for number in range(200):
+    value = random.choice(sherlock_trigrams[key])
+    sherlock_output.write(" {}".format(value))
+    key = (key[1], value)
+    if key not in sherlock_trigrams:
+        key = random.choice(sherlock_trigrams.keys())
 
 
 sherlock_output.close()
