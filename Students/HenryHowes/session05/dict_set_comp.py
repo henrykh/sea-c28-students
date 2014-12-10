@@ -36,5 +36,4 @@ if __name__ == '__main__':
     print s3
     print s4
 
-    print "set_maker_test"
     print divisible_set_maker()
