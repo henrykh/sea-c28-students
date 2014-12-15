@@ -15,22 +15,17 @@ print "cake" in my_dict
 print "mango" in my_dict.values()
 
 
-x = []
-y = "abcdefghijklmnop"
+x = range(16)
+y = []
 for number in range(16):
-    x.append(number)
+    y.append(chr(number).encode("hex"))
 
 my_dict_2 = dict(zip(x, y))
 print my_dict_2
 
 my_dict_a = {}
 for key in my_dict:
-    a_count = 0
-    for letter in my_dict[key]:
-        if letter == "a" or letter == "A":
-            a_count += 1
-    my_dict_a[key] = a_count
-
+    my_dict_a[key] = my_dict[key].lower().count('a')
 print my_dict_a
 
 s2, s3, s4 = set(), set(), set()
@@ -50,8 +45,8 @@ print s4
 print s3.issubset(s2)
 print s4.issubset(s2)
 
-python_set = {"p", "y", "t", "h", "o", "n"}
+python_set = set('python')
 python_set.add("i")
-marathon_set = frozenset(["m", "a", "r", "a", "t", "h", "o", "n"])
+marathon_set = frozenset('marathon')
 print python_set.union(marathon_set)
 print python_set.intersection(marathon_set)
