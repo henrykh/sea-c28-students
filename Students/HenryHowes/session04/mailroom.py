@@ -2,15 +2,14 @@
 
 
 def request_user_input(prompt, validator=None):
+    """prompt for input with an optional validator"""
+
     try:
         response = raw_input(prompt)
-        if response == u'return':
-            return response
-        if validator:
-            while not validator(response):
-                response = raw_input(prompt)
-                if response == 'return':
-                    break
+        while validator is not None and not validator(response):
+            if response == 'return':
+                break
+            response = raw_input(prompt)
         return response
 
     except (EOFError, KeyboardInterrupt):
@@ -18,22 +17,49 @@ def request_user_input(prompt, validator=None):
 
 
 def first_prompt_validator(response):
+    """check whether user has selected an available option"""
+
     return response == u"1" or response == u"2" or response == u"3"
 
 
 def full_name_validator(response):
+    """check whether input is a string with a space in it
+       or lists donors if 'list' is entered"""
+
     if response == 'list':
         print donor_dict.keys()
     return type(response) == str and " " in response
 
 
 def donation_validator(response):
+    """check whether donation is an int, greater than 0"""
+
     try:
         response = int(response)
     except ValueError:
         print "Donation amount must be an integer"
     finally:
         return type(response) == int and response > 0
+
+
+def donor_data(donor_base):
+    """create a dict with total donation,
+    number of donations, and average donation"""
+
+    return {donor: [sum(donor_dict[donor]),
+                    len(donor_dict[donor]),
+                    sum(donor_dict[donor]) /
+                    float(len(donor_dict[donor]))]
+            for donor in donor_dict}
+
+
+def donor_data_sort(dict_to_sort):
+    """sort a donor dict by total value donated"""
+
+    return sorted(dict_to_sort.items(),
+                  key=lambda (k, v): v[0],
+                  reverse=True)
+
 
 if __name__ == '__main__':
     donor_dict = {'Richard Sherman': [25, 50, 100], 'Russell Wilson': [30, 50],
@@ -44,9 +70,9 @@ if __name__ == '__main__':
     while first_response != u"3":
         first_response = request_user_input(u'\nTo Send a Thank You, enter 1.\n'
                                             'To Create a Report, enter 2.\n'
-                                            'To quit, enter 3: \n',
+                                            'To Quit, enter 3: \n',
                                             first_prompt_validator)
-
+        #Send Thank You
         if first_response == u"1":
             thank_you_name = request_user_input(
                 '\nEnter the full name of the donor to thank\n'
@@ -61,6 +87,7 @@ if __name__ == '__main__':
                 donation_validator)
             if donation_amount == 'return':
                 continue
+
             donation_amount = int(donation_amount)
 
             donor_dict.setdefault(thank_you_name, []).append(donation_amount)
@@ -72,20 +99,17 @@ if __name__ == '__main__':
 
             print thank_you_msg
 
+        #Create a Report
         elif first_response == u"2":
-            donor_data = {donor:
-                          [sum(donor_dict[donor]),
-                           len(donor_dict[donor]),
-                           sum(donor_dict[donor]) /
-                           float(len(donor_dict[donor]))]
-                          for donor in donor_dict}
-            donor_data_sorted = sorted(donor_data.items(),
-                                       key=lambda (k, v): v[0], reverse=True)
+            donor_data_dict = donor_data(donor_dict)
+            donor_data_dict_sorted = donor_data_sort(donor_data_dict)
+
             print "\n{:<20s} {:<20s} {:<25s} {:<20s}\n".format(
                 'Donor Name', 'Total Donation',
                 'Number of Donations', 'Average Donation')
-            for donor in donor_data_sorted:
+
+            for donor in donor_data_dict_sorted:
                 donor = donor[0]
                 print "{:<20s} {:>14d} {:>25d} {:>22.2f}\n".format(
-                    donor, donor_data[donor][0],
-                    donor_data[donor][1], donor_data[donor][2])
+                    donor, donor_data_dict[donor][0],
+                    donor_data_dict[donor][1], donor_data_dict[donor][2])
