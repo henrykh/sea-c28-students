@@ -6,8 +6,14 @@ class Element(object):
     closing_tag = "</>"
     indent = ""
 
-    def __init__(self, content=None):
+    def __init__(self, content=None, **kwargs):
         self.content = []
+        if kwargs:
+            opening_tag = [self.opening_tag.split('>')[0]]
+            for key in kwargs:
+                opening_tag.append('{}="{}"'.format(key, kwargs[key]))
+            opening_tag.append(">")
+            self.opening_tag = " ".join(opening_tag)
         if content is not None:
             self.content.append(content)
 
@@ -54,9 +60,47 @@ class Title(OneLineTag):
     opening_tag = "<title>"
     closing_tag = "</title>"
 
+#TODO - Is tag the best way to do this ?
+class SelfClosingTag(Element):
+    tag = "< />"
+
+    def render(self, file_out, ind=""):
+        file_out.write(("{}{}\n").format(ind, self.tag))
 
 
+class Br(SelfClosingTag):
+    tag = "<br />"
 
+
+class Hr(SelfClosingTag):
+    tag = "<hr />"
+
+
+class A(OneLineTag):
+    opening_tag = "<a>"
+    closing_tag = "</a>"
+
+    def __init__(self, link, content):
+        self.opening_tag = '<a href="{}">'.format(link)
+        Element.__init__(self, content)
+
+
+class Ul (Element):
+    opening_tag = "<ul>"
+    closing_tag = "</ul>"
+
+
+class Li (Element):
+    opening_tag = "<li>"
+    closing_tag = "</li>"
+
+
+class H(OneLineTag):
+
+    def __init__(self, level, content):
+        self.opening_tag = "<h{}>".format(level)
+        self.closing_tag = "<\h{}>".format(level)
+        Element.__init__(self, content)
 
 
 
