@@ -5,8 +5,10 @@ import string
 food_prefs = {u"name": u"Henry", u"city": u"Seattle",u"pie": u"apple", u"fruit": u"mango",u"salad": u"pear balsamic", u"pasta": "gnocchi"}
 print "{name} is from {city}, and he likes {pie}, {fruit}, {salad}, and {pasta}.".format(**food_prefs)
 
-alpha_num_15 = {x: y for x, y in zip(range(16), string.lowercase[:16])}
-print alpha_num_15
+alpha_num_15_1 = dict((number, chr(number).encode("hex")) for number in range(16))
+alpha_num_15_2 = {number: chr(number).encode("hex") for number in range(16)}
+print alpha_num_15_1
+print alpha_num_15_2
 
 food_prefs_two = {x: y.count('a') for x, y in food_prefs.items()}
 print food_prefs_two
