@@ -19,13 +19,13 @@ class Element(object):
             opening_tag = [self.opening_tag.split('>')[0]] + self.attributes
             self.opening_tag = " ".join(opening_tag)
             self.opening_tag += ">"
-        file_out.write("{}{}\n".format(ind, self.opening_tag))
+        file_out.write("\n{}{}".format(ind, self.opening_tag))
         for item in self.content:
             if isinstance(item, Element):
                 item.render(file_out, (ind+(" "*4)))
             else:
-                file_out.write("{}{}\n".format(ind+(" "*4), item))
-        file_out.write("{}{}\n".format(ind, self.closing_tag))
+                file_out.write("\n{}{}".format(ind+(" "*4), item))
+        file_out.write("\n{}{}".format(ind, self.closing_tag))
 
     def append(self, additional_content):
         self.content.append(additional_content)
@@ -36,7 +36,7 @@ class Html(Element):
     closing_tag = "</html>"
 
     def render(self, file_out, ind=""):
-        file_out.write("<!DOCTYPE html>\n")
+        file_out.write("<!DOCTYPE html>")
         Element.render(self, file_out)
 
 
@@ -58,7 +58,7 @@ class Head(Element):
 class OneLineTag(Element):
     def render(self, file_out, ind=""):
         one_line = [self.opening_tag] + self.content + [self.closing_tag]
-        file_out.write(("{}{}\n").format(ind, "".join(one_line)))
+        file_out.write(("\n{}{}").format(ind, "".join(one_line)))
 
 
 class Title(OneLineTag):
@@ -71,9 +71,9 @@ class SelfClosingTag(Element):
 
     def render(self, file_out, ind=""):
         if self.attributes is not None:
-            opening_tag = [self.opening_tag.split('/>')[0]] + self.attributes + ["/>"]
+            opening_tag = [self.opening_tag.split('/>')[0]] + self.attributes + [" />"]
             self.opening_tag = "".join(opening_tag)
-        file_out.write(("{}{}\n").format(ind, self.opening_tag))
+        file_out.write(("\n{}{}").format(ind, self.opening_tag))
 
 
 class Br(SelfClosingTag):
