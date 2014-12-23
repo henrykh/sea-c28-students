@@ -198,7 +198,7 @@ def test_step_8():
     body.append( hr.H(2, u"PythonClass - Class 6 example") )
 
     body.append(hr.P(u"Here is a paragraph of text -- there could be more of them, but this is enough  to show that we can do some text",
-                  style=u"text-align: center; font-style: oblique;"))
+                    style=u"text-align: center; font-style: oblique;"))
 
     body.append(hr.Hr())
 
@@ -209,7 +209,7 @@ def test_step_8():
 
     item = hr.Li()
     item.append(u"And this is a ")
-    item.append( hr.A(u"http://google.com", "link") )
+    item.append( hr.A(u"http://google.com", "link"))
     item.append(u"to google")
 
     list.append(item)
@@ -225,4 +225,13 @@ def test_step_8():
     os.remove('test_8.txt')
     test_example8.close()
 
-    
+
+def test_atag():
+    atag = hr.A("www.google.com", 'test', style="color:red", target="_blank")
+    render(atag, u"test_atag.txt")
+    test_output_atag = open('test_atag.txt', 'r')
+    test_example_atag = open('html_test/test_atag.html')
+    assert test_output_atag.read() == test_example_atag.read()
+    os.remove('test_atag.txt')
+    test_example_atag.close()
+

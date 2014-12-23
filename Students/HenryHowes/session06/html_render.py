@@ -2,38 +2,35 @@
 
 
 class Element(object):
-    opening_tag = "<>"
-    closing_tag = "</>"
-    attributes = None
+    tag = ""
+    attributes = ""
     indent = ""
 
     def __init__(self, content=None, **kwargs):
         self.content = []
         if kwargs:
-            self.attributes = ['{}="{}"'.format(key, kwargs[key]) for key in kwargs]         
+            self.attributes = [' {}="{}"'.format(
+                key, kwargs[key]) for key in kwargs]
         if content is not None:
             self.content.append(content)
 
     def render(self, file_out, ind=""):
-        if self.attributes is not None:
-            opening_tag = [self.opening_tag.split('>')[0]] + self.attributes
-            self.opening_tag = " ".join(opening_tag)
-            self.opening_tag += ">"
-        file_out.write("\n{}{}".format(ind, self.opening_tag))
+        file_out.write("\n{}<{tag}{attr}>".format(
+            ind, tag=self.tag, attr="".join(self.attributes)))
+
         for item in self.content:
             if isinstance(item, Element):
                 item.render(file_out, (ind+(" "*4)))
             else:
                 file_out.write("\n{}{}".format(ind+(" "*4), item))
-        file_out.write("\n{}{}".format(ind, self.closing_tag))
+        file_out.write("\n{}</{}>".format(ind, self.tag))
 
     def append(self, additional_content):
         self.content.append(additional_content)
 
 
 class Html(Element):
-    opening_tag = "<html>"
-    closing_tag = "</html>"
+    tag = "html"
 
     def render(self, file_out, ind=""):
         file_out.write("<!DOCTYPE html>")
@@ -41,75 +38,64 @@ class Html(Element):
 
 
 class Body(Element):
-    opening_tag = "<body>"
-    closing_tag = "</body>"
+    tag = "body"
 
 
 class P(Element):
-    opening_tag = "<p>"
-    closing_tag = "</p>"
+    tag = "p"
 
 
 class Head(Element):
-    opening_tag = "<head>"
-    closing_tag = "</head>"
+    tag = "head"
 
 
 class OneLineTag(Element):
     def render(self, file_out, ind=""):
-        one_line = [self.opening_tag] + self.content + [self.closing_tag]
-        file_out.write(("\n{}{}").format(ind, "".join(one_line)))
+        file_out.write(("\n{}<{tag}{attr}>{cont}</{tag}>").format(
+            ind, tag=self.tag, attr="".join(self.attributes),
+            cont="".join(self.content)))
 
 
 class Title(OneLineTag):
-    opening_tag = "<title>"
-    closing_tag = "</title>"
+    tag = "title"
 
 
 class SelfClosingTag(Element):
-    opening_tag = "< />"
 
     def render(self, file_out, ind=""):
-        if self.attributes is not None:
-            opening_tag = [self.opening_tag.split('/>')[0]] + self.attributes + [" />"]
-            self.opening_tag = "".join(opening_tag)
-        file_out.write(("\n{}{}").format(ind, self.opening_tag))
+        file_out.write("\n{}<{tag}{attr} />".format(
+            ind, tag=self.tag, attr="".join(self.attributes)))
 
 
 class Br(SelfClosingTag):
-    opening_tag = "<br />"
+    tag = "br"
 
 
 class Hr(SelfClosingTag):
-    opening_tag = "<hr />"
+    tag = "hr"
 
 
 class A(OneLineTag):
-    opening_tag = "<a>"
-    closing_tag = "</a>"
+    tag = "a"
 
-    def __init__(self, link, content):
-        self.opening_tag = '<a href="{}">'.format(link)
-        Element.__init__(self, content)
+    def __init__(self, link, content, **kwargs):
+        super(A, self).__init__(content, href="{}".format(link), **kwargs)
 
 
 class Ul (Element):
-    opening_tag = "<ul>"
-    closing_tag = "</ul>"
+    tag = "ul"
 
 
 class Li (Element):
-    opening_tag = "<li>"
-    closing_tag = "</li>"
+    tag = "li"
 
 
 class H(OneLineTag):
 
-    def __init__(self, level, content):
-        self.opening_tag = "<h{}>".format(level)
-        self.closing_tag = "</h{}>".format(level)
-        Element.__init__(self, content)
+    def __init__(self, level, content, **kwargs):
+        self.tag = "h{}".format(level)
+        super(H, self).__init__(content, **kwargs)
 
 
 class Meta(SelfClosingTag):
-    opening_tag = "<meta />"
+    tag = "meta"
