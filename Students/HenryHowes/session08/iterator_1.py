@@ -35,11 +35,11 @@ class IterateMe_2(object):
     ( like xrange(4) )
     """
     def __init__(self, start, stop, step=1):
-        self.start, self.stop = int(start-step), int(stop)
-        self.current, self.step = self.start, int(step)
+        self.start, self.stop = int(start), int(stop)
+        self.current, self.step = int(self.start-step), int(step)
 
     def __iter__(self):
-        self.__init__(self.start+self.step, self.stop, self.step)
+        self.current = self.start-self.step
         return self
 
     def next(self):
