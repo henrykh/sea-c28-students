@@ -23,11 +23,10 @@ def doubler(num=1):
 
 
 def fib(num=1):
-    twoback, oneback = 0, 0
+    prev = 0
     while True:
         yield num
-        twoback, oneback = oneback, num
-        num = oneback + twoback
+        num, prev = num + prev, num
 
 
 def prime(num=2):
